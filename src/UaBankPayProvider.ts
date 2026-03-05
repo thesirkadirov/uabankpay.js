@@ -7,40 +7,41 @@ export default class UaBankPayProvider {
         const baseUrl = 'https://bank.gov.ua/qr/';
 
         // Validate that all required fields are present in the request
-        if (!request.receiverName || !request.receiverIban || !request.receiverCode || !request.destination) {
+        if (!request.receiverName || !request.receiverIban || !request.receiverCode) {
             throw new Error('Missing required fields in UaBankPayLinkRequest');
         }
 
-        // Construct the payment data string according to the NBU QR code format
-        const payStructureString: string = [
-            'BCD',
-            '002',
-            '2',
-            'UCT',
-            '', // reserved
-            request.receiverName,
-            request.receiverIban,
-            request.amount,
-            request.receiverCode,
-            '', // reserved
-            '', // reserved
-            request.destination,
-            '' // reserved
-        ].join('\n');
+        // Validate the length of the receiver name and the format of the IBAN
+        if (request.receiverName.length > 38) {
+            throw new Error('Receiver name exceeds maximum length of 38 characters');
+        }
+        if (request.receiverIban.length !== 29) {
+            throw new Error('Receiver IBAN is not in the correct format (should be 29 characters)');
+        }
 
-        // Convert the encoded data to a Base64 string
-        const base64EncodedData: string = this.utf8ToBase64Url(payStructureString);
+        // Construct the payment data string according to the NBU QR code format
+        const payStructureString: string = 'BCD\n003\n1\nXCT\n'
+            + '\n' // Унікальний ідентифікатор отримувача
+            + `${request.receiverName}\n`
+            + `${request.receiverIban}\n`
+            + `${request.amount}\n`
+            + `${request.receiverCode}\n`
+            + 'SUPP/SUPP\n' // Категорія / ціль (ExternalCategoryPurpose1Code ISO 20022)
+            + `${request.reference}\n`
+            + `${request.destination}\n`
+            + `${request.display}\n`
+            + (request.changeable ? '\n' : 'FEFF\n') // Код заборони зміни полів
+            + '\n' // Дата / час дії рахунку на оплату
+            + '\n' // Дата / час формування рахунку на оплату
+            // noinspection BadExpressionStatementJS
+            '\n'; // Електронний підпис даних
+
+        // Encode the payment data string into a Uint8Array and then convert it to a Base64 URL-safe string
+        const encoder = new TextEncoder();
+        const structureBytes: Uint8Array = encoder.encode(payStructureString);
+        const base64Url: string = Buffer.from(structureBytes).toString('base64url');
 
         // Construct the final payment link by appending the Base64-encoded data to the base URL
-        return `${baseUrl}${base64EncodedData}`;
-    }
-
-    private static utf8ToBase64Url(utf8String: string): string {
-        const buffer: Buffer<ArrayBuffer> = Buffer.from(utf8String, 'utf8');
-        const standardBase64: string = buffer.toString('base64');
-        return standardBase64
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
+        return `${baseUrl}${base64Url}`;
     }
 }

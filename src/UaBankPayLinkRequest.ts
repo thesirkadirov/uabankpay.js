@@ -45,5 +45,37 @@ export type UaBankPayLinkRequest = {
      * @type {string}
      * @example Добровільний внесок на здійснення статутної діяльності ГО "Верховний Порядок"
      */
-    destination: string;
+    destination: string | '';
+
+    /**
+     * Reference information for the payment, which can be used to provide additional context or details about the transaction.
+     * This field is optional and can be left empty if not needed. It may include information such as a reference number,
+     * a note for the recipient, or any other relevant details that can help identify the payment or provide additional
+     * context for the transaction. Providing reference information can be helpful for both the payer and the receiver
+     * to keep track of payments and ensure that they are properly documented.
+     * @type {string}
+     * @example AAABBBCCCDDDEEEFFF1234
+     */
+    reference: string | '';
+
+    /**
+     * Optional field for display information. This can be used to specify how the payment information should be displayed
+     * to the user. It may include instructions for the payer, additional details about the payment, or any other relevant
+     * information that can help guide the user through the payment process. This field is optional and can be left empty
+     * if not needed.
+     * @type {string}
+     * @example Внесок на підтримку діяльності
+     */
+    display: string | '';
+
+    /**
+     * A boolean flag indicating whether the fields in the payment request can be changed by the user. If set to true, the
+     * user may be allowed to modify certain fields in the payment request before finalizing the transaction. If set to
+     * false, the fields in the payment request are fixed and cannot be changed by the user. This can be useful for ensuring
+     * that the payment information is accurate and consistent with the intended transaction, while still allowing for some
+     * flexibility if needed. Note that not all banks or payment providers may support this feature, so it is important to
+     * check the bank account for received payments to confirm whether the user paid the correct amount and provided the
+     * correct details, regardless of the value of the flag.
+     */
+    changeable: boolean;
 }
