@@ -1,15 +1,15 @@
 {
   "name": "@sirkadirov/uabankpay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Use specification of QR code for payments in Ukrainian banks (NBU QR) to generate direct links for payments.",
   "keywords": [ "Ukraine", "NBU", "bank pay", "payments", "payment links" ],
-  "homepage": "https://github.com/thesirkadirov/uabankqr.js",
+  "homepage": "https://github.com/sirkadirov/uabankpay.js",
   "bugs": {
-    "url": "https://github.com/thesirkadirov/uabankqr.js/issues"
+    "url": "https://github.com/sirkadirov/uabankpay.js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thesirkadirov/uabankqr.js.git"
+    "url": "git+https://github.com/sirkadirov/uabankpay.js.git"
   },
   "license": "MIT",
   "author": "Yurii Kadirov <contact@sirkadirov.com> (https://sirkadirov.com)",
