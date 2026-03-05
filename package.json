@@ -23,15 +23,19 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "files": [
     "dist",
     "src"
   ],
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
     "@types/node": "^25.3.3",
+    "jest": "^30.2.0",
     "rimraf": "^6.1.3",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
   }
 }
