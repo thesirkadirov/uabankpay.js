@@ -1,4 +1,4 @@
+import { UaBankPayLinkRequest } from './UaBankPayLinkRequest';
 import UaBankPayProvider from './UaBankPayProvider';
 
-// noinspection JSUnusedGlobalSymbols
-export default UaBankPayProvider;
+export { UaBankPayProvider, UaBankPayLinkRequest };

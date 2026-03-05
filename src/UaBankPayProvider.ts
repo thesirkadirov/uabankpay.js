@@ -1,12 +1,15 @@
-import UaBankPayLinkRequest from './UaBankPayLinkRequest';
-// @ts-ignore
-import unicodeToWin1251 from 'utf8-to-win1251';
+import { UaBankPayLinkRequest } from './UaBankPayLinkRequest';
 
 // noinspection JSUnusedGlobalSymbols
 export default class UaBankPayProvider {
     public static generatePayLink(request: UaBankPayLinkRequest): string {
         // NBU QR code format specification: https://bank.gov.ua/qr/
         const baseUrl = 'https://bank.gov.ua/qr/';
+
+        // Validate that all required fields are present in the request
+        if (!request.receiverName || !request.receiverIban || !request.receiverCode || !request.destination) {
+            throw new Error('Missing required fields in UaBankPayLinkRequest');
+        }
 
         // Construct the payment data string according to the NBU QR code format
         const payStructureString: string = [
@@ -25,13 +28,19 @@ export default class UaBankPayProvider {
             '' // reserved
         ].join('\n');
 
-        // Encode the payment data string in Windows-1251 encoding as required by the NBU QR code specification
-        const win1251EncodedData: Uint8Array<ArrayBufferLike> = unicodeToWin1251(payStructureString);
-
         // Convert the encoded data to a Base64 string
-        const base64EncodedData: string = btoa(String.fromCharCode(...win1251EncodedData));
+        const base64EncodedData: string = this.utf8ToBase64Url(payStructureString);
 
         // Construct the final payment link by appending the Base64-encoded data to the base URL
         return `${baseUrl}${base64EncodedData}`;
+    }
+
+    private static utf8ToBase64Url(utf8String: string): string {
+        const buffer: Buffer<ArrayBuffer> = Buffer.from(utf8String, 'utf8');
+        const standardBase64: string = buffer.toString('base64');
+        return standardBase64
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
     }
 }
