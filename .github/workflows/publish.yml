@@ -1,8 +1,9 @@
-name: Publish Package
+name: Build and publish the package
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -13,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -27,19 +28,8 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Set up Node.js for NPM
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Set up Node.js for GitHub Packages
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
@@ -49,3 +39,14 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
+
+      - name: Set up Node.js for NPM
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
